@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta name="viewport" content="user-scalable=0">
+  <head>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body onresize="updateDimensions()">
+    <canvas id="canvas"></canvas>
+<script>
+  
+let memory;
+
+const readCharStr = (ptr, len) => {
+  const bytes = new Uint8Array(memory.buffer, ptr, len);
+  return new TextDecoder("utf-8").decode(bytes);
+}
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+const jsPrintText = (text, len, x, y) => {
+    ctx.font = "48px serif";
+    ctx.fillText(readCharStr(text, len), x, y);
+};
+
+const jsStrokeRect = (x, y, width, height) => {
+    ctx.strokeRect(x, y, width, height);
+};
+
+const env = {
+  jsStrokeRect,
+  jsPrintText,
+};
+
+var globalInstance = undefined;
+
+function updateDimensions() {
+  const width = canvas.getBoundingClientRect().width;
+  const height = canvas.getBoundingClientRect().height;
+  canvas.width = width;
+  canvas.height = height;
+
+  if (globalInstance) globalInstance.exports.onResize(width, height);
+}
+
+fetchAndInstantiate('main.wasm', {env}).then(function(instance) {
+  globalInstance = instance;
+  memory = instance.exports.memory;
+  instance.exports.onInit();
+
+  updateDimensions();
+});
+
+function fetchAndInstantiate(url, importObject) {
+  return fetch(url).then(response =>
+    response.arrayBuffer()
+  ).then(bytes =>
+    WebAssembly.instantiate(bytes, importObject)
+  ).then(results =>
+    results.instance
+  );
+}
+
+</script>
+</body>
+</html>
