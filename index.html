@@ -8,6 +8,8 @@
     <canvas id="canvas"></canvas>
 <script>
   
+const defaultFont = "48px serif";
+
 let memory;
 
 const readCharStr = (ptr, len) => {
@@ -17,19 +19,54 @@ const readCharStr = (ptr, len) => {
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+ctx.font = defaultFont;
 
-const jsPrintText = (text, len, x, y) => {
-    ctx.font = "48px serif";
-    ctx.fillText(readCharStr(text, len), x, y);
+const jsArc = (x, y, r, start_angle, end_angle, counter_clockwise) => {
+  ctx.arc(x, y, r, start_angle, end_angle, counter_clockwise);
+};
+
+const jsArcTo = (x1, y1, x2, y2, r) => {
+  ctx.arcTo(x1, y1, x2, y2, r);
+};
+
+const jsBeginPath = () => {
+  ctx.beginPath();
+};
+
+const jsFill = () => {
+  ctx.fill();
+};
+
+const jsMoveTo = (x, y) => {
+  ctx.moveTo(x, y);
+};
+
+const jsPrintText = (text, text_len, x, y) => {
+  ctx.fillText(readCharStr(text, text_len), x, y);
+};
+
+const jsSetFont = (font, font_len) => {
+  ctx.font = readCharStr(font, font_len);
+};
+
+const jsStroke = () => {
+  ctx.stroke();
 };
 
 const jsStrokeRect = (x, y, width, height) => {
-    ctx.strokeRect(x, y, width, height);
+  ctx.strokeRect(x, y, width, height);
 };
 
 const env = {
-  jsStrokeRect,
+  jsArc,
+  jsArcTo,
+  jsBeginPath,
+  jsFill,
+  jsMoveTo,
   jsPrintText,
+  jsSetFont,
+  jsStroke,
+  jsStrokeRect,
 };
 
 var globalInstance = undefined;
@@ -37,8 +74,10 @@ var globalInstance = undefined;
 function updateDimensions() {
   const width = canvas.getBoundingClientRect().width;
   const height = canvas.getBoundingClientRect().height;
+  const lastFont = ctx.font;
   canvas.width = width;
   canvas.height = height;
+  ctx.font = lastFont;
 
   if (globalInstance) globalInstance.exports.onResize(width, height);
 }
