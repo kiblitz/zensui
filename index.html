@@ -21,6 +21,10 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 ctx.font = defaultFont;
 
+const jsAlert = (msg, len) => {
+  alert(readCharStr(msg, len));
+};
+
 const jsArc = (x, y, r, start_angle, end_angle, counter_clockwise) => {
   ctx.arc(x, y, r, start_angle, end_angle, counter_clockwise);
 };
@@ -31,6 +35,14 @@ const jsArcTo = (x1, y1, x2, y2, r) => {
 
 const jsBeginPath = () => {
   ctx.beginPath();
+};
+
+const jsBezierCurveTo = (cx1, cy1, cx2, cy2, x, y) => {
+  ctx.bezierCurveTo(cx1, cy1, cx2, cy2, x, y);
+};
+
+const jsClearRect = (x, y, width, height) => {
+  ctx.clearRect(x, y, width, height);
 };
 
 const jsFill = () => {
@@ -58,9 +70,12 @@ const jsStrokeRect = (x, y, width, height) => {
 };
 
 const env = {
+  jsAlert,
   jsArc,
   jsArcTo,
   jsBeginPath,
+  jsBezierCurveTo,
+  jsClearRect,
   jsFill,
   jsMoveTo,
   jsPrintText,
